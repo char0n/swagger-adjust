@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   configureStore,
   bindActionCreators,
@@ -38,6 +39,14 @@ import {
   buildReducer,
   wrapWithTryCatch,
 } from './helpers';
+import {
+  useSystemComponent,
+  useSystemActionCreator,
+  useSystem,
+  useSystemSelector,
+  useSystemActionCreatorBound,
+  useSystemSelectorShallowEqual,
+} from './hooks';
 
 export default class System {
   initialState = {};
@@ -48,6 +57,14 @@ export default class System {
     configs: {},
     fn: {},
     components: {},
+    hooks: {
+      useSystemComponent,
+      useSystemActionCreator,
+      useSystemActionCreatorBound,
+      useSystem,
+      useSystemSelector,
+      useSystemSelectorShallowEqual,
+    },
     rootInjects: {},
     statePlugins: {},
   };
@@ -97,6 +114,10 @@ export default class System {
     return this.system.fn;
   };
 
+  getHooks = () => {
+    return this.system.hooks;
+  };
+
   getComponents = (component) => {
     const res = this.system.components[component];
 
@@ -136,6 +157,7 @@ export default class System {
       ...this.getWrappedAndBoundActions(dispatch),
       ...this.getWrappedAndBoundSelectors(getState, this.getSystem),
       ...this.getStateThunks(getState),
+      hooks: this.getHooks(),
       fn: this.getFn(),
       configs: this.getConfigs(),
     };
@@ -150,12 +172,14 @@ export default class System {
       getSystem: this.getSystem,
       getStore: this.getStore,
       getComponents: this.getComponents,
+      getHooks: this.getHooks,
       getState: this.getStore().getState,
       getConfigs: this.getConfigs,
       getActions: this.getActions,
       createAsyncThunk,
       createSelector,
       createAction,
+      React,
       ...this.system.rootInjects,
     };
   }

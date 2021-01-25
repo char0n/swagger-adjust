@@ -5,9 +5,17 @@ import { Provider } from 'react-redux';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import System from './system';
+import SystemContext from './system/context';
 
 const StatePlugin = (system) => {
   return {
+    components: {
+      TestComponent: () => {
+        const sys = system.hooks.useSystem();
+
+        return <div>{Object.keys(sys)}</div>;
+      },
+    },
     statePlugins: {
       example: {
         initialState: { color: 'white' },
@@ -27,7 +35,7 @@ const StatePlugin = (system) => {
           ),
         },
         selectors: {
-          selectColor: system.createSelector((state) => state.color),
+          selectColor: (state, arg) => `${state.color}-${arg}`,
         },
         reducers: {
           'example/updateAction': (state, action) => ({ ...state, color: action.payload }),
@@ -40,15 +48,19 @@ const StatePlugin = (system) => {
 const system = new System({
   plugins: [StatePlugin],
 });
-// console.dir(system.getSystem().exampleActions.updateActionAsync('test'));
+setTimeout(() => {
+  system.getSystem().exampleActions.updateActionAsync('test');
+}, 2000);
 
 const store = system.getStore();
 
 ReactDOM.render(
   <React.StrictMode>
-    <Provider store={store}>
-      <App />
-    </Provider>
+    <SystemContext.Provider value={system.getSystem}>
+      <Provider store={store}>
+        <App />
+      </Provider>
+    </SystemContext.Provider>
   </React.StrictMode>,
   document.getElementById('root')
 );
