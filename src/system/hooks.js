@@ -40,3 +40,8 @@ export const useSystemComponent = memoizeWith(identity, (componentName) => {
   const system = useSystem();
   return system.getComponents(componentName);
 });
+
+export const useSystemHook = (hookName, ...args) => {
+  const system = useSystem();
+  return system.getHooks()[hookName](...args);
+};
