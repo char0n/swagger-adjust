@@ -160,6 +160,10 @@ Once a selector has been defined, you can use it anywhere that you can get a sys
 system.exampleSelectors.selectFavoriteColor() // gets `favColor` from state for you
 ```
 
+##### Composing selectors from different plugins
+
+
+
 #### Components
 
 You can provide a map of components to be integrated into the system.
