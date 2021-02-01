@@ -9,6 +9,7 @@ const App = () => {
   return (
     <main>
       {color}
+      {React.version}
       <TestComponent />
     </main>
   );
