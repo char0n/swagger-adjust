@@ -5,6 +5,8 @@ import {
   createAsyncThunk,
   createAction,
   createSelector,
+  createReducer,
+  combineReducers,
 } from '@reduxjs/toolkit';
 import serializeError from 'serialize-error';
 import {
@@ -13,14 +15,15 @@ import {
   mergeDeepRight,
   compose,
   filter,
-  keys,
   map,
   transduce,
   toPairs,
   mapObjIndexed,
   pipe,
+  prop,
   path,
   defaultTo,
+  isEmpty,
 } from 'ramda';
 import {
   isArray,
@@ -32,13 +35,7 @@ import {
   isPlainObject,
 } from 'ramda-adjunct';
 
-import {
-  combinePlugins,
-  systemExtend,
-  callAfterLoad,
-  buildReducer,
-  wrapWithTryCatch,
-} from './helpers';
+import { combinePlugins, systemExtend, callAfterLoad, wrapWithTryCatch } from './helpers';
 import {
   useSystemComponent,
   useSystemActionCreator,
@@ -50,6 +47,10 @@ import {
 
 export default class System {
   initialState = {};
+
+  initialPluginState = {};
+
+  pluginStateAccessor = prop;
 
   plugins = [];
 
@@ -72,7 +73,9 @@ export default class System {
   boundSystem = null;
 
   constructor(config = {}) {
-    this.initialState = pathOr({}, ['initialState'], config);
+    this.initialState = pathOr(this.initialState, ['initialState'], config);
+    this.initialPluginState = pathOr(this.initialPluginState, ['initialPluginState'], config);
+    this.pluginStateAccessor = pathOr(this.pluginStateAccessor, ['pluginStateAccessor'], config);
     this.plugins = pathOr([], ['plugins'], config);
     this.system = mergeDeepRight(this.system, pathOr({}, ['system'], config));
     this.store = configureStore({
@@ -149,7 +152,7 @@ export default class System {
     }
   }
 
-  buildSystem(buildRootReducer = true) {
+  buildSystem(forceBuildRootReducer = true) {
     const { getState, dispatch } = this.getStore();
 
     this.boundSystem = {
@@ -162,8 +165,8 @@ export default class System {
       configs: this.getConfigs(),
     };
 
-    if (buildRootReducer) {
-      this.rebuildReducer();
+    if (forceBuildRootReducer) {
+      this.rebuildRootReducer();
     }
   }
 
@@ -184,8 +187,17 @@ export default class System {
     };
   }
 
-  rebuildReducer() {
-    this.store.replaceReducer(buildReducer(this.system.statePlugins));
+  rebuildRootReducer() {
+    const reducedSlices = mapObjIndexed(
+      ({ initialState = this.initialPluginState, reducers = {} }) =>
+        createReducer(initialState, reducers),
+      this.system.statePlugins
+    );
+    const rootReducer = isEmpty(reducedSlices)
+      ? createReducer(this.initialState, identity)
+      : combineReducers(reducedSlices);
+
+    this.store.replaceReducer(rootReducer);
   }
 
   getType(name) {
@@ -281,18 +293,10 @@ export default class System {
     }, selectorGroups);
   }
 
-  getStates(state) {
-    return keys(this.system.statePlugins).reduce((obj, key) => {
-      obj[key] = state[key]; // eslint-disable-line no-param-reassign
-      return obj;
-    }, {});
-  }
-
   getStateThunks(getState) {
-    return keys(this.system.statePlugins).reduce((obj, key) => {
-      obj[key] = () => getState()[key]; // eslint-disable-line no-param-reassign
-      return obj;
-    }, {});
+    return mapObjIndexed((plugin, sliceName) => {
+      return () => this.pluginStateAccessor(sliceName, getState());
+    }, this.system.statePlugins);
   }
 
   getBoundSelectors(getState, getSystem) {
@@ -320,7 +324,7 @@ export default class System {
     const actions = this.getActions();
     const process = (creator) => {
       if (isNotFunction(creator)) {
-        return mapObjIndexed((prop) => process(prop), creator);
+        return mapObjIndexed((property) => process(property), creator);
       }
 
       return (...args) => {

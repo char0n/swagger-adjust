@@ -1,23 +1,5 @@
-import {
-  pick,
-  mergeDeepRight,
-  mapObjIndexed,
-  path,
-  isEmpty,
-  keys,
-  hasPath,
-  identity,
-  assoc,
-} from 'ramda';
-import {
-  isArray,
-  isPlainObject,
-  isNotPlainObject,
-  isFunction,
-  isNotArray,
-  isNotFunction,
-} from 'ramda-adjunct';
-import { combineReducers } from '@reduxjs/toolkit';
+import { mergeDeepRight, mapObjIndexed, path, isEmpty, keys, hasPath } from 'ramda';
+import { isArray, isPlainObject, isFunction, isNotArray, isNotFunction } from 'ramda-adjunct';
 
 export const systemExtend = (dest = {}, src = {}) => {
   /* eslint-disable no-param-reassign */
@@ -143,37 +125,3 @@ export function callAfterLoad(plugins, system, { hasLoaded } = {}) {
 
   return calledSomething;
 }
-
-export const makeReducer = (initialState = {}, reducers) => (state = initialState, action) => {
-  if (isNotPlainObject(reducers)) return state;
-
-  const reducerFn = reducers[action.type];
-  if (isFunction(reducerFn)) {
-    const res = wrapWithTryCatch(reducerFn)(state, action);
-    /**
-     * If the try/catch wrapper kicks in, we'll get null back...
-     * in that case, we want to avoid making any changes to state.
-     */
-    return res === null ? state : res;
-  }
-  return state;
-};
-
-export const allReducers = (reducerSystem) => {
-  const reducers = keys(reducerSystem).reduce((reducerObj, name) => {
-    const { initialState, reducers: namespacedReducers } = reducerSystem[name];
-    const caseReducer = makeReducer(initialState, namespacedReducers);
-    return assoc(name, caseReducer, reducerObj);
-  }, {});
-
-  if (isEmpty(reducers)) {
-    return identity;
-  }
-
-  return combineReducers(reducers);
-};
-
-export const buildReducer = (states) => {
-  const reducerObj = mapObjIndexed(pick(['initialState', 'reducers']), states);
-  return allReducers(reducerObj);
-};

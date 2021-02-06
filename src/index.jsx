@@ -8,27 +8,32 @@ import System from './system';
 import SystemContext from './system/context';
 
 const StatePlugin = (system) => {
+  const updateAction = system.createAction('example/updateAction');
+
   return {
     components: {
       TestComponent: () => {
-        const sys = system.hooks.useSystem();
-
-        return <div>{Object.keys(sys)}</div>;
+        return (
+          <div>
+            <h2>System API:</h2>
+            <div>System</div>
+          </div>
+        );
       },
     },
     statePlugins: {
       example: {
         initialState: { color: 'white' },
         actions: {
-          updateAction: system.createAction('example/updateAction'),
+          updateAction,
           updateActionAsync: system.createAsyncThunk(
             'example/asyncThunkStatus',
             async (val, thunkAPI) => {
               const sys = thunkAPI.extra.getSystem();
-              const { updateAction } = sys.getActions().exampleActions;
+              const { updateAction: action } = sys.getActions().exampleActions;
               const test = await val;
 
-              thunkAPI.dispatch(updateAction(val));
+              thunkAPI.dispatch(action(val));
 
               return test;
             }
@@ -38,7 +43,7 @@ const StatePlugin = (system) => {
           selectColor: (state, arg) => `${state.color}-${arg}`,
         },
         reducers: {
-          'example/updateAction': (state, action) => ({ ...state, color: action.payload }),
+          [updateAction]: (state, action) => ({ ...state, color: action.payload }),
         },
       },
     },
