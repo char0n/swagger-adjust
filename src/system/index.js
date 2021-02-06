@@ -77,23 +77,23 @@ export default class System {
     this.initialPluginState = pathOr(this.initialPluginState, ['initialPluginState'], config);
     this.pluginStateAccessor = pathOr(this.pluginStateAccessor, ['pluginStateAccessor'], config);
     this.plugins = pathOr([], ['plugins'], config);
-    this.system = mergeDeepRight(this.system, pathOr({}, ['system'], config));
-    this.store = configureStore({
-      preloadedState: this.initialState,
-      reducer: identity,
-      middleware: (getDefaultMiddleware) =>
+    this.system.configs = pathOr({}, ['configs'], config);
+    const middleware = pathOr(
+      (system) => (getDefaultMiddleware) =>
         getDefaultMiddleware({
-          serializableCheck: {
-            // Ignore these field paths in all actions
-            ignoredActionPaths: ['payload'],
-          },
           thunk: {
             extraArgument: {
-              getSystem: this.getSystem,
-              ...pathOr({}, ['thunk', 'extraArgument'], config),
+              getSystem: system.getSystem,
             },
           },
         }),
+      ['middleware'],
+      config
+    );
+    this.store = configureStore({
+      preloadedState: this.initialState,
+      reducer: identity,
+      middleware: isFunction(middleware) ? middleware(this) : middleware,
     });
 
     this.buildSystem(false);
@@ -342,9 +342,5 @@ export default class System {
       (actionCreator) => bindActionCreators(process(actionCreator), dispatch),
       actions
     );
-  }
-
-  setConfigs(configs) {
-    this.system.configs = configs;
   }
 }
