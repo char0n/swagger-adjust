@@ -13,7 +13,7 @@ const StatePlugin = (system) => {
   return {
     components: {
       TestComponent: () => {
-        console.dir(system.getSystem().plugin2Selectors.selectAggregate());
+        console.dir(system.getSystem());
 
         return (
           <div>

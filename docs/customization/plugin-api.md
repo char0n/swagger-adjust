@@ -48,7 +48,7 @@ const ExtendingPlugin = (system) => ({
 });
 ```
 
-As you can see, each plugin is passed a reference to the `system` being built up. As long as `NormalPlugin` is compiled before `ExtendingPlugin`, this will work without any issues.
+As you can see, each plugin is passed a reference to the unbound `system` being built up. As long as `NormalPlugin` is compiled before `ExtendingPlugin`, this will work without any issues.
 
 There is no dependency management built into the plugin system, so if you create a plugin that relies on another, it is your responsibility to make sure that the dependent plugin is loaded _after_ the plugin being depended on.
 
