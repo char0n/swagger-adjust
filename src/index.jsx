@@ -13,8 +13,6 @@ const StatePlugin = (system) => {
   return {
     components: {
       TestComponent: () => {
-        console.dir(system.getSystem());
-
         return (
           <div>
             <h2>System API:</h2>
