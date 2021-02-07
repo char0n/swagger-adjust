@@ -86,6 +86,22 @@ which we'll define in the next section.
 
 For more information about the concept of actions in Redux, see the [Redux Actions documentation](http://redux.js.org/docs/basics/Actions.html).
 
+#### Initial state
+
+Initial state can be provided to a plugin even without need to define reducers.
+
+```js
+const MyReducerPlugin = (system) => ({
+  statePlugins: {
+    example: {
+      initialState: {
+        favColor: 'red'
+      },
+    },
+  },
+});
+```
+
 #### Reducers
 
 Reducers take a state, an action and return a new state.
@@ -162,7 +178,91 @@ system.exampleSelectors.selectFavoriteColor() // gets `favColor` from state for 
 
 ##### Composing selectors from different plugins
 
+It's possible to compose selectors from different plugins by returning a function from a selector.
+This function will be called with `System` as an argument. This allows you to access selectors
+from different plugins.
 
+```js
+const ComposedSelectorsPlugin = () => ({
+  statePlugins: {
+    plugin1: {
+      initialState: {
+        prop1: 'val1',
+      },
+      selectors: {
+        selectProp1: (state) => state.prop1,
+      },
+    },
+    plugin2: {
+      initialState: {
+        prop2: 'val2',
+      },
+      selectors: {
+        selectProp2: (state) => state.prop2,
+        selectAggregate: () => (system) => {
+          const { selectProp1 } = system.plugin1Selectors;
+          const { selectProp2 } = system.plugin2Selectors;
+
+          return `${selectProp1()}${selectProp2()}`;
+        },
+      },
+    },
+  }
+});
+```
+
+Note that it's not possible to effectively memoize selectors like `selectAggregate`, which means
+this approach can be effectively used only when composed selector returns `Strings` or when they return
+`Objects` or `Arrays` where `shallow eqality` can be used to compare last and current selected value. 
+More about this [here](../usage/hooks-api.md#usesystemselectorshallowequalnamespace-selectorname-args).
+
+
+There is an alternative approach to cross-plugin selector composition demonstrated below.
+
+```js
+const ComposedSelectorsPlugin = () => ({
+  afterLoad(system) {
+    const { selectProp1 } = system.plugin1Selectors;
+    const { selectProp2 } = system.plugin2Selectors;
+
+    this.statePlugins.plugin2.selectors.selectAggregate = system.createSelector(
+      () => selectProp1(),
+      () => selectProp2(),
+      (prop1, prop2) => `${prop1}${prop2}`
+    );
+  },
+  statePlugins: {
+    plugin1: {
+      initialState: {
+        prop1: 'val1',
+      },
+      selectors: {
+        selectProp1: (state) => state.prop1,
+      },
+    },
+    plugin2: {
+      initialState: {
+        prop2: 'val2',
+      },
+      selectors: {
+        selectProp2: (state) => state.prop2,
+      },
+    },
+  }
+});
+```
+
+After all the plugins have loaded, [afterLoad](#afterload) method is called with a single argument of `system`.
+We can access bound selectors from the `system` and compose them using memoized selector. Notice how
+we enclosed the selector call into thunks; we're doing it due to the fact that selectors are already 
+bound to their state slice and state doesn't need to be provided to them explicitly. 
+Then we dynamically assign a new composed selector to plugin2 selectors. 
+Once code inside `afterLoad` has finished executing, the `system` is going to be recompiled and
+composed selector will be accessible.
+
+```js
+system.plugin2Selectors.selectAggregate() // gets `val1val2` from multiple state slices for you
+```
 
 #### Components
 

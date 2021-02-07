@@ -13,6 +13,8 @@ const StatePlugin = (system) => {
   return {
     components: {
       TestComponent: () => {
+        console.dir(system.getSystem().plugin2Selectors.selectAggregate());
+
         return (
           <div>
             <h2>System API:</h2>
@@ -22,6 +24,14 @@ const StatePlugin = (system) => {
       },
     },
     statePlugins: {
+      plugin1: {
+        initialState: {
+          prop1: 'val1',
+        },
+        selectors: {
+          selectProp1: (state) => state.prop1,
+        },
+      },
       example: {
         initialState: { color: 'white' },
         actions: {
@@ -50,8 +60,31 @@ const StatePlugin = (system) => {
   };
 };
 
+const Plugin2 = () => ({
+  afterLoad(system) {
+    const { selectProp1 } = system.plugin1Selectors;
+    const { selectProp2 } = system.plugin2Selectors;
+
+    this.statePlugins.plugin2.selectors.selectAggregate = system.createSelector(
+      () => selectProp1(),
+      () => selectProp2(),
+      (prop1, prop2) => `${prop1}${prop2}`
+    );
+  },
+  statePlugins: {
+    plugin2: {
+      initialState: {
+        prop2: 'val2',
+      },
+      selectors: {
+        selectProp2: (state) => state.prop2,
+      },
+    },
+  },
+});
+
 const system = new System({
-  plugins: [StatePlugin],
+  plugins: [StatePlugin, Plugin2],
 });
 setTimeout(() => {
   system.getSystem().exampleActions.updateActionAsync('test');

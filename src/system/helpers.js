@@ -93,7 +93,7 @@ export function wrapWithTryCatch(fn, { logErrors = true } = {}) {
     return fn;
   }
 
-  return (...args) => {
+  return function wrapper(...args) {
     try {
       return fn.call(this, ...args);
     } catch (error) {
@@ -114,8 +114,9 @@ export function callAfterLoad(plugins, system, { hasLoaded } = {}) {
     }
   }
 
-  if (isFunction(plugins))
+  if (isFunction(plugins)) {
     return callAfterLoad.call(this, plugins(system), system, { hasLoaded: calledSomething });
+  }
 
   if (isArray(plugins)) {
     return plugins.map((plugin) =>
