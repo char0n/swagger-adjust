@@ -248,7 +248,7 @@ const ComposedSelectorsPlugin = () => ({
         selectProp2: (state) => state.prop2,
       },
     },
-  }
+  },
 });
 ```
 
@@ -269,48 +269,39 @@ system.plugin2Selectors.selectAggregate() // gets `val1val2` from multiple state
 You can provide a map of components to be integrated into the system.
 
 Be mindful of the key names for the components you provide, as you'll need to use those names to refer to the components elsewhere.
+Please also be aware that component names are global and are not specific to a plugin that they are defined in.
 
-```javascript
-class HelloWorldClass extends React.Component {
-  render() {
-    return <h1>Hello World!</h1>
-  }
-}
+```js
+const HelloWorld = () => (
+  <h1>Hello World!</h1>
+);
 
-const MyComponentPlugin = function(system) {
-  return {
-    components: {
-      HelloWorldClass: HelloWorldClass
-      // components can just be functions, these are called "stateless components"
-      HelloWorldStateless: () => <h1>Hello World!</h1>,
-    }
-  }
-}
+const MyComponentPlugin = (system) => ({
+  components: {
+    HelloWorld,
+  },
+});
 ```
 
-```javascript
-// elsewhere
-const HelloWorldStateless = system.getComponent("HelloWorldStateless")
-const HelloWorldClass = system.getComponent("HelloWorldClass")
+Component can be accessed either by using [useSystemComponent hook](../usage/hooks-api.md#usesystemcomponentcomponentname) 
+or by using `getComponents` method on `system`.
+
+```js
+const HelloWorld = useSystemComponent('HelloWorld');
+```
+or
+```js
+const HelloWorld = system.getComponents('HelloWorld')
 ```
 
 You can also "cancel out" any components that you don't want by creating a stateless component that always returns `null`:
 
 ```javascript
-const NeverShowInfoPlugin = function(system) {
-  return {
-    components: {
-      info: () => null
-    }
-  }
-}
-```
-
-You can use `config.failSilently` if you don't want a warning when a component doesn't exist in the system.
-
-Be mindful of `getComponent` arguments order. In the example below, the boolean `false` refers to presence of a container, and the 3rd argument is the config object used to suppress the missing component warning.
-```javascript
-const thisVariableWillBeNull = getComponent("not_real", false, { failSilently: true })
+const NeverShowInfoPlugin = (system) => ({
+  components: {
+    HelloWorld: () => null
+  },
+});
 ```
 
 #### Wrap-Actions
@@ -319,46 +310,184 @@ Wrap Actions allow you to override the behavior of an action in the system.
 
 They are function factories with the signature `(oriAction, system) => (...args) => result`.
 
-A Wrap Action's first argument is `oriAction`, which is the action being wrapped. It is your responsibility to call the `oriAction` - if you don't, the original action will not fire!
+A Wrap Action's first argument is `oriAction`, which is the bound action creator being wrapped (not an actual action).
+It is your responsibility to call the `oriAction` action creator - if you don't, the original action will not fire!
 
-This mechanism is useful for conditionally overriding built-in behaviors, or listening to actions.
+This mechanism is useful for conditionally overriding built-in behaviors or applying different messaging patterns.
+Read more about messaging patterns in [Redux Book](https://leanpub.com/redux-book).
 
-```javascript
-// FYI: in an actual Swagger UI, `updateSpec` is already defined in the core code
-// it's just here for clarity on what's behind the scenes
-const MySpecPlugin = function(system) {
-  return {
-    statePlugins: {
-      spec: {
-        actions: {
-          updateSpec: (str) => {
-            return {
-              type: "SPEC_UPDATE_SPEC",
-              payload: str
-            }
+For all the following examples we'll use following plugin as a base one:
+
+```js
+const BasePlugin = (system) => ({
+  statePlugins: {
+    example: {
+      actions: {
+        updateColor: system.createAction('example/updateColor')
+      },
+    },
+  },
+});
+```
+
+##### Routing patterns
+
+###### Filter
+
+Filtering is useful when you have some actions, but have to dispose of some of them based on certain criteria.
+
+```js
+const MyWrappingPlugin = () => ({
+  statePlugins: {
+    example: {
+      wrapActions: {
+        updateColor: (oriAction, system) => (payload) => {
+          // we only allow dispatching of updateColor action if color is different than red
+          if (payload !== 'red') {
+            return oriAction(payload);
           }
-        }
-      }
-    }
-  }
-}
+          return undefined;
+        },
+      },
+    },
+  },
+});
+```
 
-// this plugin allows you to watch changes to the spec that is in memory
-const MyWrapActionPlugin = function(system) {
+###### Mapper
+
+Mapping refers to triggering a different side effect from an action depending on either the content of the action itself or the context of the application.
+
+```js
+const MyWrappingPlugin = () => ({
+  statePlugins: {
+    example: {
+      wrapActions: {
+        updateColor: (oriAction, system) => (payload) => {
+          // we map this action with sligtly different payload when color update `red` was requested
+          if (payload === 'red') {
+            return oriAction('purple');  
+          }
+          return oriAction(payload);
+        },
+      },
+    },
+  },
+});
+```
+
+###### Splitter
+
+Useful for dispatching multiple actions as a response to another action.
+
+```js
+const MyWrappingPlugin = () => ({
+  statePlugins: {
+    example: {
+      wrapActions: {
+        updateColor: (oriAction, system) => (payload) => {
+          // we dispatch another two actions from anotherUIPlugin before our original action is dispatched          
+          system.anotherUIPlugin.updateBorderColor(payload);
+          system.anotherUIPlugin.updateBackgroundColor(payload);
+
+          return oriAction(payload);
+        },
+      },
+    },
+  },
+});
+```
+
+###### Aggregator
+
+Aggregation refers to triggering a side effect as a result of multiple actions.
+
+```js
+const MyWrappingPlugin = () => {
+  let updates = 0;
+  
   return {
     statePlugins: {
-      spec: {
+      example: {
         wrapActions: {
-          updateSpec: (oriAction, system) => (str) => {
-            // here, you can hand the value to some function that exists outside of Swagger UI
-            console.log("Here is my API definition", str)
-            return oriAction(str) // don't forget! otherwise, Swagger UI won't update
-          }
-        }
-      }
-    }
-  }
-}
+          updateColor: (oriAction, system) => (payload) => {
+            updates += 1;
+
+            // open color picker widget as user might be working a lot with colors   
+            if (updates === 2) {
+              system.anotherUIPlugin.openColorPicker();
+            }
+
+            return oriAction(payload);
+          },
+        },
+      },
+    },
+  };
+};
+```
+
+##### Transformation Patterns
+
+###### Enricher
+
+Enriching refers to adding missing properties to an action.
+
+```js
+const MyWrappingPlugin = () => ({
+  statePlugins: {
+    example: {
+      wrapActions: {
+        updateColor: (oriAction, system) => (payload) => {          
+          // enrich action payload of hex code of the color
+          return oriAction({ color: payload, hex: system.fn.toHex(payload) });
+        },
+      },
+    },
+  },
+});
+```
+
+###### Normalizer
+
+Normalization - where your server returns a different structure from what is used on the client side or
+when the payload need to be normalized before the action is dispatched.
+
+```js
+const MyWrappingPlugin = () => ({
+  statePlugins: {
+    example: {
+      wrapActions: {
+        updateColor: (oriAction, system) => (payload) => {
+          // red => [255, 0, 0]
+          // #FF0000 => [255, 0, 0]
+          // [255, 0, 0] => [255, 0, 0]
+          
+          return oriAction(toRBG(payload));
+        },
+      },
+    },
+  },
+});
+```
+
+###### Translator
+
+Sometimes we want to dispatch actions specific the UI which reducers don't really expect. 
+We want to translate those actions to other actions that reducers understand.
+
+```js
+const MyWrappingPlugin = () => ({
+  statePlugins: {
+    uiPlugin: {
+      wrapActions: {
+        pickColor: (oriAction, system) => (payload) => {
+          return system.exampleActions.updateColor(payload);
+        },
+      },
+    },
+  },
+});
 ```
 
 #### Wrap-Selectors
@@ -367,72 +496,63 @@ Wrap Selectors allow you to override the behavior of a selector in the system.
 
 They are function factories with the signature `(oriSelector, system) => (state, ...args) => result`.
 
-This interface is useful for controlling what data flows into components. We use this in the core code to disable selectors based on the API definition's version.
+`oriSelector` is a bound selector so there is no need to provide it a state explicitly.
 
-```javascript
-import { createSelector } from 'reselect'
+This interface is useful for controlling what data flows into components.
 
-// FYI: in an actual Swagger UI, the `url` spec selector is already defined
-// it's just here for clarity on what's behind the scenes
-const MySpecPlugin = function(system) {
-  return {
-    statePlugins: {
-      spec: {
-        selectors: {
-          url: createSelector(
-            state => state.get("url")
-          )
-        }
-      }
-    }
-  }
-}
+```js
+const MyPlugin = (system) => ({
+  statePlugins: {
+    spec: {
+      selectors: {
+        url: state => state.url,
+      },
+    },
+  },
+});
 
-const MyWrapSelectorsPlugin = function(system) {
-  return {
-    statePlugins: {
-      spec: {
-        wrapSelectors: {
-          url: (oriSelector, system) => (state, ...args) => {
-            console.log('someone asked for the spec url!!! it is', state.get('url'))
-            // you can return other values here...
-            // but let's just enable the default behavior
-            return oriSelector(state, ...args)
-          }
-        }
-      }
-    }
-  }
-}
+const MyWrapSelectorsPlugin = (system) => ({
+  statePlugins: {
+    spec: {
+      wrapSelectors: {
+        url: (oriSelector, system) => (state, ...args) => {
+          return oriSelector(...args)
+        },
+      },
+    },
+  },
+});
 ```
+
+Note that it's not possible to effectively memoize wrapped selectors, which means
+this approach can be effectively used only when composed selector returns `Strings` or when they return
+`Objects` or `Arrays` where `shallow eqality` can be used to compare last and current selected value.
+More about this [here](../usage/hooks-api.md#usesystemselectorshallowequalnamespace-selectorname-args).
+
 
 #### Wrap-Components
 
 Wrap Components allow you to override a component registered within the system.
 
-Wrap Components are function factories with the signature `(OriginalComponent, system) => props => ReactElement`. If you'd prefer to provide a React component class, `(OriginalComponent, system) => ReactClass` works as well.
+Wrap Components are function factories with the signature `(OriginalComponent, system) => props => ReactElement`.
 
-```javascript
-const MyWrapBuiltinComponentPlugin = function(system) {
-  return {
-    wrapComponents: {
-      info: (Original, system) => (props) => {
-        return <div>
-          <h3>Hello world! I am above the Info component.</h3>
-          <Original {...props} />
-        </div>
-      }
-    }
-  }
-}
+```js
+const MyWrapBuiltinComponentPlugin = (system) => ({
+  wrapComponents: {
+    Info: (Original, system) => (props) => (
+      <div>
+        <h3>Hello world! I am above the Info component.</h3>
+        <Original {...props} />
+      </div>
+    ),
+  },
+});
 ```
 
 Here's another example that includes a code sample of a component that will be wrapped:
 
-```javascript
-/////  Overriding a component from a plugin
-
-// Here's our normal, unmodified component.
+```js
+// simple number display
 const MyNumberDisplayPlugin = function(system) {
   return {
     components: {
@@ -441,43 +561,25 @@ const MyNumberDisplayPlugin = function(system) {
   }
 }
 
-// Here's a component wrapper defined as a function.
-const MyWrapComponentPlugin = function(system) {
-  return {
-    wrapComponents: {
-      NumberDisplay: (Original, system) => (props) => {
-        if(props.number > 10) {
-          return <div>
+// simple humber display + warning about big numbers
+const MyWrapComponentPlugin = (system) => ({
+  wrapComponents: {
+    NumberDisplay: (Original, system) => (props) => {
+      const { number } = props;
+      
+      if(number > 10) {
+        return (
+          <div>
             <h3>Warning! Big number ahead.</h3>
             <Original {...props} />
           </div>
-        } else {
-          return <Original {...props} />
-        }
+        );
+      } else {
+        return <Original {...props} />
       }
-    }
-  }
-}
-
-// Alternatively, here's the same component wrapper defined as a class.
-const MyWrapComponentPlugin = function(system) {
-  return {
-    wrapComponents: {
-      NumberDisplay: (Original, system) => class WrappedNumberDisplay extends React.component {
-        render() {
-          if(props.number > 10) {
-            return <div>
-              <h3>Warning! Big number ahead.</h3>
-              <Original {...props} />
-            </div>
-          } else {
-            return <Original {...props} />
-          }
-        }
-      }
-    }
-  }
-}
+    },
+  },
+});
 ```
 
 #### `rootInjects`
@@ -487,48 +589,43 @@ The `rootInjects` interface allows you to inject values at the top level of the 
 This interface takes an object, which will be merged in with the top-level system object at runtime.
 
 ```js
-const MyRootInjectsPlugin = function(system) {
-  return {
-    rootInjects: {
-      myConstant: 123,
-      myMethod: (...params) => console.log(...params)
-    }
-  }
-}
+const MyRootInjectsPlugin = () => ({
+  rootInjects: {
+    myConstant: 123,
+    myMethod: (...params) => console.log(...params)
+  },
+});
 ```
 
 #### `afterLoad`
 
 The `afterLoad` plugin method allows you to get a reference to the system after your plugin has been registered.
 
-This interface is used in the core code to attach methods that are driven by bound selectors or actions. You can also use it to execute logic that requires your plugin to already be ready, for example fetching initial data from a remote endpoint and passing it to an action your plugin creates.
+You can use it to execute logic that requires your plugin (and others) to already be ready, 
+for example fetching initial data from a remote endpoint and passing it to an action your plugin creates.
+When `afterLoad` runs you can be sure that all plugins have already been compiled.
 
 The plugin context, which is bound to `this`, is undocumented, but below is an example of how to attach a bound action as a top-level method:
 
 ```javascript
-const MyMethodProvidingPlugin = function() {
-  return {
-    afterLoad(system) {
-      // at this point in time, your actions have been bound into the system
-      // so you can do things with them
-      this.rootInjects = this.rootInjects || {}
-      this.rootInjects.myMethod = system.exampleActions.updateFavoriteColor
+const MyMethodProvidingPlugin = (system) => ({
+  afterLoad(sys) {
+    // at this point in time, your actions have been bound into the system
+    // so you can do things with them
+    this.rootInjects = this.rootInjects || {}
+    this.rootInjects.myMethod = sys.exampleActions.updateFavoriteColor
+  },
+  statePlugins: {
+    example: {
+      actions: {
+        updateFavoriteColor: system.createAction('example/updateFavoriteColor'),          
+      },
     },
-    statePlugins: {
-      example: {
-        actions: {
-          updateFavoriteColor: (str) => {
-            return {
-              type: "EXAMPLE_SET_FAV_COLOR",
-              payload: str
-            }
-          }
-        }
-      }
-    }
-  }
-}
+  },
+});
 ```
+
+This method is also ideal for [cross-plugin selectors composition](#composing-selectors-from-different-plugins). 
 
 #### fn
 
@@ -537,11 +634,9 @@ The fn interface allows you to add helper functions to the system for use elsewh
 ```javascript
 import leftPad from "left-pad"
 
-const MyFnPlugin = function(system) {
-  return {
-    fn: {
-      leftPad: leftPad
-    }
-  }
-}
+const MyFnPlugin = (system) => ({
+  fn: {
+    leftPad: leftPad,
+  },
+});
 ```

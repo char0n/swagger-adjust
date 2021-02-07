@@ -60,12 +60,12 @@ const StatePlugin = (system) => {
   };
 };
 
-const Plugin2 = () => ({
-  afterLoad(system) {
-    const { selectProp1 } = system.plugin1Selectors;
-    const { selectProp2 } = system.plugin2Selectors;
+const Plugin2 = (system) => ({
+  afterLoad(sys) {
+    const { selectProp1 } = sys.plugin1Selectors;
+    const { selectProp2 } = sys.plugin2Selectors;
 
-    this.statePlugins.plugin2.selectors.selectAggregate = system.createSelector(
+    this.statePlugins.plugin2.selectors.selectAggregate = sys.createSelector(
       () => selectProp1(),
       () => selectProp2(),
       (prop1, prop2) => `${prop1}${prop2}`
@@ -76,8 +76,18 @@ const Plugin2 = () => ({
       initialState: {
         prop2: 'val2',
       },
+      actions: {
+        doSomething: system.createAction('plugin2/doSomething'),
+      },
       selectors: {
         selectProp2: (state) => state.prop2,
+      },
+    },
+    example: {
+      wrapSelectors: {
+        selectColor: (oriSelector) => (state, ...args) => {
+          return oriSelector(...args);
+        },
       },
     },
   },
@@ -87,7 +97,7 @@ const system = new System({
   plugins: [StatePlugin, Plugin2],
 });
 setTimeout(() => {
-  system.getSystem().exampleActions.updateActionAsync('test');
+  system.getSystem().exampleActions.updateAction('test');
 }, 2000);
 
 const store = system.getStore();
