@@ -179,7 +179,7 @@ system.exampleSelectors.selectFavoriteColor() // gets `favColor` from state for 
 ##### Composing selectors from different plugins
 
 It's possible to compose selectors from different plugins by returning a function from a selector.
-This function will be called with `System` as an argument. This allows you to access selectors
+This function will be called with `system` as an argument. This allows you to access selectors
 from different plugins.
 
 ```js
