@@ -1,6 +1,6 @@
 {
-  "short_name": "swagger-adjust",
-  "name": "Playground for demonstrating features of swagger-adjust",
+  "short_name": "React App",
+  "name": "Create React App Sample",
   "icons": [
     {
       "src": "favicon.ico",

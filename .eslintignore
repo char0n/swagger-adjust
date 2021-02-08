@@ -1,5 +1,8 @@
-/build
+/.idea
+/cjs
+/es
+/dist
+/demo
 /config
-/scripts
 /node_modules
 /babel.config.js

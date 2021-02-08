@@ -3,14 +3,13 @@
 # dependencies
 /node_modules
 /.pnp
-/.idea
 .pnp.js
 
+# testing
+/coverage
 
-/es
-/cjs
-/dist
-/swagger-adjust-*.*.*.tgz
+# production
+/build
 
 # misc
 .DS_Store
