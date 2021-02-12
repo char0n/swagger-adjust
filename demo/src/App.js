@@ -1,7 +1,11 @@
 import logo from './logo.svg';
 import './App.css';
+import { useSystemSelector, useSystemComponent } from 'swagger-adjust';
 
-function App() {
+const App = () => {
+  const color = useSystemSelector('example', 'selectColor', 1, 2);
+  const TestComponent = useSystemComponent('TestComponent');
+
   return (
     <div className="App">
       <header className="App-header">
@@ -15,11 +19,12 @@ function App() {
           target="_blank"
           rel="noopener noreferrer"
         >
-          Learn React
+          Learn React; color-{color}
+          <TestComponent />
         </a>
       </header>
     </div>
   );
-}
+};
 
 export default App;
