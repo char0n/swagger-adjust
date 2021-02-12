@@ -22,4 +22,6 @@
 /swagger-adjust-*.*.*.tgz
 /babel.config.js
 /demo
+/CODE_OF_CONDUCT.md
+/CONTRIBUTING.md
 .eslintrc
