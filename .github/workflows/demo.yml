@@ -24,10 +24,16 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Install dependencies
+
+      - name: Install swagger-adjust dependencies
+        run: npm ci
+      - name: Build swagger-adjust
+        run: npm run build
+
+      - name: Install demo dependencies
         run: npm ci
         working-directory: ./demo
-       - name: Build demo
+      - name: Build demo
         run: npm run build
         working-directory: ./demo
       - name: Upload build artifacts
