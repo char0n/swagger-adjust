@@ -18,6 +18,7 @@ logic is overridable and extensible.
 - [Configuration](docs/usage/configuration.md)
 - [Hooks API](docs/usage/hooks-api.md)
 - [System API](docs/usage/system-api.md)
+- [Development](docs/usage/development.md)
 
 #### Customization
 
