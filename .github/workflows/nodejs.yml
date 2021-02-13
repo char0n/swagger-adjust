@@ -17,10 +17,6 @@ jobs:
 
     needs: [build]
 
-    strategy:
-      matrix:
-        node-version: [ 15.x ]
-
     steps:
       - name: Merge me!
         uses: ridedott/merge-me-action@master
@@ -33,15 +29,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [15.x]
-
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
-          node-version: ${{ matrix.node }}
+          node-version: 15
       - name: Install dependencies
         run: npm ci
       - name: Lint code
