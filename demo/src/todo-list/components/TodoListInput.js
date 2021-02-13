@@ -17,7 +17,7 @@ const TodoListInput = () => {
   const dispatch = useDispatch();
 
   const handleKeyPress = (event) => {
-    if (event.key === 'Enter') {
+    if (event.key === 'Enter' && event.target.value.trim() !== '') {
       event.preventDefault();
       dispatch(addItem(event.target.value));
       setValue('');
