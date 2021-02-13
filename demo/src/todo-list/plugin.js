@@ -7,7 +7,7 @@ import { addItem } from './actions';
 import { selectTodoList, selectTodoListItems } from './selectors';
 import reducers, { initialState } from './reducers';
 
-const plugin = () => {
+const TodoListPlugin = () => {
   return {
     components: {
       TodoListLayout,
@@ -15,6 +15,9 @@ const plugin = () => {
       TodoListInput,
       TodoList,
       TodoListItem,
+    },
+    fn: {
+      todoList: {},
     },
     statePlugins: {
       todoList: {
@@ -27,4 +30,4 @@ const plugin = () => {
   };
 };
 
-export default plugin;
+export default TodoListPlugin;

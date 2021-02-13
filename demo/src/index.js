@@ -3,10 +3,12 @@ import ReactDOM from 'react-dom';
 import { System, SystemContext, useSystemComponent } from 'swagger-adjust';
 import { Provider } from 'react-redux';
 
-import reportWebVitals from './reportWebVitals';
 import TodoListPlugin from './todo-list/plugin';
+import TodoListEnhancerPlugin from './todo-list-enhancer/plugin';
+import reportWebVitals from './reportWebVitals';
 
-const system = new System({ plugins: [TodoListPlugin] });
+const plugins = [TodoListPlugin, TodoListEnhancerPlugin];
+const system = new System({ plugins });
 const store = system.getStore();
 
 /**

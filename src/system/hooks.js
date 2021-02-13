@@ -1,6 +1,6 @@
 import { useContext } from 'react';
-import { identical, memoizeWith, identity } from 'ramda';
-import { isFunction } from 'ramda-adjunct';
+import { identical, memoizeWith, identity, path } from 'ramda';
+import { isFunction, ensureArray } from 'ramda-adjunct';
 import { useSelector, shallowEqual } from 'react-redux';
 
 import SystemContext from './context';
@@ -40,6 +40,11 @@ export const useSystemComponent = memoizeWith(identity, (componentName) => {
   const system = useSystem();
   return system.getComponents(componentName);
 });
+
+export const useSystemFn = (name) => {
+  const system = useSystem();
+  return path(ensureArray(name), system.fn);
+};
 
 export const useSystemHook = (hookName) => {
   const system = useSystem();

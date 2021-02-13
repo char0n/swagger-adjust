@@ -8,6 +8,7 @@ export {
   useSystemActionCreatorBound,
   useSystemActionCreator,
   useSystemComponent,
+  useSystemFn,
   useSystemSelectorShallowEqual,
   useSystemHook,
 } from './system/hooks';

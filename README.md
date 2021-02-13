@@ -15,7 +15,7 @@ logic is overridable and extensible.
 We have a working demo of TodoList app built using this library. The demo consist of two
 plugins: `todoList` and `todoListEnhancer`. `todoList` plugin has basic functionality 
 of displaying list of todo items and adding a new one. `todoListEnhancer` add additional
-functionality like completing, deleting and also adds back operations on todo list.
+functionality like completing, deleting and also adds batch operations on todo list.
 
 You can run the demo in your browser at: https://char0n.github.io/swagger-adjust/
 

@@ -53,6 +53,8 @@ const Component = ({ userId }) => {
 ##### useSystemActionCreator(namespace, actionName)
 
 Access the `unbound` Flux Standard Action creator from the System.
+Be aware that when accessing `unbound` actions in this hook,
+`wrapActions` that may have overridden this action will have no effect.
 
 ```js
 const Component = ({ userData }) => {

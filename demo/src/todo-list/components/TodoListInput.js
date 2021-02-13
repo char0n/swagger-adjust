@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import TextField from '@material-ui/core/TextField';
 import { makeStyles } from '@material-ui/core/styles';
-import { useSystemActionCreator } from 'swagger-adjust';
-import { useDispatch } from 'react-redux';
+import { useSystemActionCreatorBound } from 'swagger-adjust';
 
 const useStyles = makeStyles(() => ({
   input: {
@@ -13,13 +12,12 @@ const useStyles = makeStyles(() => ({
 const TodoListInput = () => {
   const [value, setValue] = useState('');
   const classes = useStyles();
-  const addItem = useSystemActionCreator('todoList', 'addItem');
-  const dispatch = useDispatch();
+  const addItem = useSystemActionCreatorBound('todoList', 'addItem');
 
   const handleKeyPress = (event) => {
     if (event.key === 'Enter' && event.target.value.trim() !== '') {
       event.preventDefault();
-      dispatch(addItem(event.target.value));
+      addItem({ title: event.target.value });
       setValue('');
     }
   };

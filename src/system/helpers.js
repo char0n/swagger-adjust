@@ -16,8 +16,8 @@ export const systemExtend = (dest = {}, src = {}) => {
    */
   if (isPlainObject(src.wrapComponents)) {
     mapObjIndexed((wrapperFn, key) => {
-      const originalComponent = path(['components', 'key'], dest);
-      if (isArray(originalComponent())) {
+      const originalComponent = path(['components', key], dest);
+      if (isArray(originalComponent)) {
         dest.components[key] = originalComponent.concat([wrapperFn]);
         delete src.wrapComponents[key];
       } else if (isFunction(originalComponent)) {
