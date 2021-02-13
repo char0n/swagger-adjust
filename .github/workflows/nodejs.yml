@@ -34,7 +34,14 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: 15
+      - name: Cache Node Modules
+        id: cache-node-modules
+        uses: actions/cache@v2
+        with:
+          path: node_modules
+          key: node-modules-${{ hashFiles('package-lock.json') }}
       - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm ci
       - name: Lint code
         run: npm run lint
@@ -45,6 +52,15 @@ jobs:
         env:
           CI: true
 
+      - name: Cache demo Node Modules
+        id: cache-node-modules-demo
+        uses: actions/cache@v2
+        with:
+          path: demo/node_modules
+          key: node-modules-demo${{ hashFiles('demo/package-lock.json') }}
+      - name: Install dependencies
+        if: steps.cache-node-modules-demo.outputs.cache-hit != 'true'
+        run: npm ci
       - name: Install demo dependencies
         run: npm ci
         working-directory: ./demo
