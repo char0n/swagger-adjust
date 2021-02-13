@@ -176,6 +176,19 @@ Once a selector has been defined, you can use it anywhere that you can get a sys
 system.exampleSelectors.selectFavoriteColor() // gets `favColor` from state for you
 ```
 
+##### Composing selectors from single plugin
+
+You can compose selectors from **single plugin** in a classical way before you assign these
+selectors to a plugin.
+
+```js
+import { createSelector } from 'swagger-adjust';
+
+export const selectTodoList = (state) => state;
+
+export const selectTodoListItems = createSelector(selectTodoList, (state) => state.items);
+```
+
 ##### Composing selectors from different plugins
 
 It's possible to compose selectors from different plugins by returning a function from a selector.
