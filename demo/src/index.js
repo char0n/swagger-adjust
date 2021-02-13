@@ -22,11 +22,11 @@ const App = () => {
 
 ReactDOM.render(
   <React.StrictMode>
-    <SystemContext.Provider value={system.getSystem}>
-      <Provider store={store}>
+    <Provider store={store}>
+      <SystemContext.Provider value={system.getSystem}>
         <App />
-      </Provider>
-    </SystemContext.Provider>
+      </SystemContext.Provider>
+    </Provider>
   </React.StrictMode>,
   document.getElementById('root')
 );
