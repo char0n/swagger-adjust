@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom';
 import { System, SystemContext, useSystemComponent } from 'swagger-adjust';
 import { Provider } from 'react-redux';
 
-import './index.css';
 import reportWebVitals from './reportWebVitals';
 import TodoListPlugin from './todo-list/plugin';
 
