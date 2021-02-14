@@ -1,7 +1,15 @@
 {
   "name": "swagger-adjust",
   "description": "Pluggable framework for creating extendable React+Redux applications",
-  "keywords": ["swagger", "plugins", "customization", "enhancing", "react", "redux", "react-redux-applications"],
+  "keywords": [
+    "swagger",
+    "plugins",
+    "customization",
+    "enhancing",
+    "react",
+    "redux",
+    "react-redux-applications"
+  ],
   "version": "0.2.1",
   "main": "cjs/index.js",
   "module": "es/index.js",
@@ -32,6 +40,14 @@
   "peerDependencies": {
     "react": "^17.0.1",
     "react-dom": "^17.0.1"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": false
+    },
+    "react-dom": {
+      "optional": false
+    }
   },
   "devDependencies": {
     "@babel/cli": "=7.12.16",
