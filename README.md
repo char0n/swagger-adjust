@@ -1,7 +1,7 @@
 # Swagger Adjust
 
 Swagger Adjust is a plugin-able framework for building [React](https://reactjs.org/) + [Redux](https://redux.js.org/) based applications.
-This framework was born by the decoupling ideas of plugin-able core of [SwaggerUI](https://github.com/swagger-api/swagger-ui) into 
+This framework was born by decoupling ideas of plugin-able core of [SwaggerUI](https://github.com/swagger-api/swagger-ui) into 
 separate reusable component.
 
 <p align="center">
