@@ -4,8 +4,9 @@ Swagger Adjust is a plugin-able framework for building [React](https://reactjs.o
 This framework was born by the decoupling ideas of plugin-able core of [SwaggerUI](https://github.com/swagger-api/swagger-ui) into 
 separate reusable component.
 
-![alt text](./logo.png)
-> Logo borrowed from article https://www.reprezen.com/blog/pluggable-extensions-to-the-openapi-specification-language
+<p align="center">
+  <img alt="Logo borrowed from: https://www.reprezen.com/blog/pluggable-extensions-to-the-openapi-specification-language" src="https://raw.githubusercontent.com/char0n/swagger-adjust/main/logo.png">
+</p>
 
 ## General
 
