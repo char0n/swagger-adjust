@@ -25,6 +25,7 @@ You can run the demo in your browser at: https://char0n.github.io/swagger-adjust
 
 - [Installation](docs/usage/installation.md)
 - [Configuration](docs/usage/configuration.md)
+- [API](docs/usage/api.md)
 - [Hooks API](docs/usage/hooks-api.md)
 - [System API](docs/usage/system-api.md)
 - [Development](docs/usage/development.md)
