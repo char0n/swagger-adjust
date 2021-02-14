@@ -1,6 +1,7 @@
 {
   "name": "swagger-adjust",
   "description": "Pluggable framework for creating extendable React+Redux applications",
+  "keywords": ["swagger", "plugins", "customization", "enhancing", "react", "redux", "react-redux-applications"],
   "version": "0.2.0",
   "main": "cjs/index.js",
   "module": "es/index.js",
