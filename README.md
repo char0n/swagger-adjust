@@ -19,6 +19,8 @@ functionality like completing, deleting and also adds batch operations on todo l
 
 You can run the demo in your browser at: https://char0n.github.io/swagger-adjust/
 
+You can find demo source code in [demo directory](https://github.com/char0n/swagger-adjust/tree/main/demo/src) of this repository.
+
 ## Documentation
 
 #### Usage
