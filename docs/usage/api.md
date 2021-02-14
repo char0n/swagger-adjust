@@ -25,6 +25,14 @@ For more details on using `createSelector`, see:
 
 - The [Redux Toolkit documentation](https://redux-toolkit.js.org/api/createSelector)
 
+### nanoid
+
+An inlined copy of [nanoid/nonsecure](https://github.com/ai/nanoid). Generates a non-cryptographically-secure random ID string.
+
+For more details on using `nanoid`, see:
+
+- The [Redux Toolkit documentation](https://redux-toolkit.js.org/api/other-exports#nanoid)
+
 ### System
 
 The _system_ is the heart of the Swagger Adjust. At runtime, it's a JavaScript object that holds many things.

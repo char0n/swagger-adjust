@@ -1,3 +1,5 @@
+import { nanoid } from 'swagger-adjust';
+
 import { addItem } from './actions';
 
 export const initialState = {
@@ -7,7 +9,7 @@ export const initialState = {
 const reducers = {
   [addItem]: (state, action) => {
     const items = state.items.slice();
-    const id = `${items.length + 1}`;
+    const id = nanoid();
     const newItem = { id, ...action.payload };
 
     items.unshift(newItem);
