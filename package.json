@@ -10,7 +10,7 @@
     "redux",
     "react-redux-applications"
   ],
-  "version": "0.2.1",
+  "version": "0.2.2",
   "main": "cjs/index.js",
   "module": "es/index.js",
   "jsnext:main": "es/index.js",
