@@ -1,11 +1,9 @@
-import React from 'react';
 import { assocPath } from 'ramda';
-import { useSystemComponent } from 'swagger-adjust';
 
 import { completeItem, uncompleteItem, deleteItem, completeAll, deleteAll } from './actions';
 import { formatTimestamp } from './fn';
 import reducers from './reducers';
-import TodoList from './wraping-components/TodoList';
+import TodoList from './components/TodoList';
 import TodoListItem from './components/TodoListItem';
 import TodoListBatchOperations from './components/TodoListBatchOperations';
 

@@ -109,23 +109,57 @@ Reducers take a state, an action and return a new state.
 Reducers must be provided to the system under the name of the action type that they handle, in this case, `example/udateFavoriteColor`.
 
 ```js
-const MyReducerPlugin = (system) => ({
-  statePlugins: {
-    example: {
-      initialState: {
-        favColor: 'red'
-      },
-      reducers: {
-        "example/udateFavoriteColor": (state, action) => {
-          // you're only working with the state slice under the the name of "example".
-          // So you can do what you want, without worrying about /other/ namespaces.
-          return { ...state, favColor: action.payload };
+const MyReducerPlugin = (system) => { 
+  const updateFavoriteColor = system.createAction('example/updateFavoriteColor');
+  
+  return {
+    statePlugins: {
+      example: {
+        initialState: {
+          favColor: 'red'
+        },
+        actions: {
+          updateFavoriteColor
+        },
+        reducers: {
+          [updateFavoriteColor]: (state, action) => {
+            /**
+             * You're only working with the state slice under the the name of "example".
+             * So you can do what you want, without worrying about /other/ namespaces.
+             */
+            state.favColor = action.payload;
+          },
         },
       },
     },
-  },
-});
+  };
+};
 ```
+
+###### Direct state mutations
+
+Redux requires reducer functions to be pure and treat state values as immutable. 
+While this is essential for making state updates predictable and observable, 
+it can sometimes make the implementation of such updates awkward.
+
+To make things easier, `Swagger Adjust` uses [immer](https://github.com/mweststrate/immer) to let
+you write reducers as if they were mutating the state directly. In reality, the reducer receives
+a proxy state that translates all mutations into equivalent copy operations.
+
+Without [immer](https://github.com/mweststrate/immer), case reducer would look like this:
+
+```js
+reducers: {
+  [updateFavoriteColor]: (state, action) => {
+    return { ...state, favColor: action.payload };
+  },
+}
+```
+
+> Note that you're able to effectively ignore `immer` by doing what you're always used to do - using [ES6 spread syntax](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax).
+> `immer` will detect that reducer returned a new state instead of "mutating" it.
+
+Read more about direct state mutations in [Redux Toolkit documentation](https://redux-toolkit.js.org/api/createReducer#direct-state-mutation).
 
 #### Selectors
 

@@ -8,13 +8,9 @@ export const initialState = {
 
 const reducers = {
   [addItem]: (state, action) => {
-    const items = state.items.slice();
-    const id = nanoid();
-    const newItem = { id, ...action.payload };
+    const newItem = { id: nanoid(), ...action.payload };
 
-    items.unshift(newItem);
-
-    return { ...state, items };
+    state.items.push(newItem);
   },
 };
 
