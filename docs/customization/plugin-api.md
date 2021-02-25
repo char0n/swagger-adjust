@@ -136,6 +136,56 @@ const MyReducerPlugin = (system) => {
 };
 ```
 
+Reducers are overridable, which means that we can replace reducers of another plugin.
+Here is an example of plugin that overrides the original reducer and converts the 
+reduced color to [HEX](https://en.wikipedia.org/wiki/Hexadecimal) before the value is reduced.
+
+```js
+const MyReducerPlugin = (system) => { 
+  const updateFavoriteColor = system.createAction('example/updateFavoriteColor');
+  
+  return {
+    statePlugins: {
+      example: {
+        initialState: {
+          favColor: 'red'
+        },
+        actions: {
+          updateFavoriteColor
+        },
+        reducers: {
+          [updateFavoriteColor]: (state, action) => {
+            /**
+             * You're only working with the state slice under the the name of "example".
+             * So you can do what you want, without worrying about /other/ namespaces.
+             */
+            state.favColor = action.payload;
+          },
+        },
+      },
+    },
+  };
+};
+
+const MyReducerPluginOverride = (system) => {
+  return {
+    statePlugins: {
+      example: {
+        reducers: {
+          'example/updateFavoriteColor': (state, action) => {
+            /**
+             * You're only working with the state slice under the the name of "example".
+             * So you can do what you want, without worrying about /other/ namespaces.
+             */
+            state.favColor = toHex(action.payload);
+          },
+        },
+      },
+    },
+  };
+};
+```
+
 ###### Direct state mutations
 
 Redux requires reducer functions to be pure and treat state values as immutable. 
