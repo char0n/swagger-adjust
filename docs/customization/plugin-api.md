@@ -401,6 +401,34 @@ const NeverShowInfoPlugin = (system) => ({
 });
 ```
 
+#### Hooks
+
+You can provide a map of hooks to be integrated into the system.
+
+Be mindful of the key names for the hooks you provide, as you'll need to use those names to refer to the hooks elsewhere.
+Please also be aware that component names are global and are not specific to a plugin that they are defined in.
+
+```javascript
+import { useScreenSize } from './hooks';
+
+const NeverShowInfoPlugin = (system) => ({
+  hooks: {
+    useScreenSize,
+  },
+});
+```
+
+Hooks can be accessed either by using [useSystemHook hook](../usage/hooks-api.md#usesystemhookhookname)
+or by using `getHooks` method on `system`.
+
+```js
+const useScreenSize = useSystemHooks('useScreenSize');
+```
+or
+```js
+const {  useScreenSize } = system.getHooks();
+```
+
 #### Wrap-Actions
 
 Wrap Actions allow you to override the behavior of an action in the system.
