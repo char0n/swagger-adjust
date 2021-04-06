@@ -8,6 +8,9 @@
     "sourceType": "module",
     "ecmaFeatures": {
       "impliedStrict": true
+    },
+    "babelOptions": {
+      "envName": "es"
     }
   },
   "extends": ["eslint-config-airbnb-base", "prettier"],
