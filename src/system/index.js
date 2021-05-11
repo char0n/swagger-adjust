@@ -305,19 +305,20 @@ export default class System {
       const getNestedState = () => this.pluginStateAccessor(stateName, getState());
 
       return mapObjIndexed(
-        (fn) => (...args) => {
-          let res = wrapWithTryCatch(fn).apply(null, [getNestedState(), ...args]);
+        (fn) =>
+          (...args) => {
+            let res = wrapWithTryCatch(fn).apply(null, [getNestedState(), ...args]);
 
-          //  if a selector returns a function, give it the system - for advanced usage
-          if (isFunction(res)) {
-            res = wrapWithTryCatch(res)(getSystem());
-          }
-          // if selector agains return a function, call it with a current state - memoized cross-plugin selectors
-          if (isFunction(res)) {
-            res = res(getNestedState());
-          }
-          return res;
-        },
+            //  if a selector returns a function, give it the system - for advanced usage
+            if (isFunction(res)) {
+              res = wrapWithTryCatch(res)(getSystem());
+            }
+            // if selector agains return a function, call it with a current state - memoized cross-plugin selectors
+            if (isFunction(res)) {
+              res = res(getNestedState());
+            }
+            return res;
+          },
         obj
       );
     }, this.getSelectors());
