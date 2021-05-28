@@ -37,7 +37,7 @@ export const systemExtend = (dest = {}, src = {}) => {
   }
 
   /**
-   * Account for wrapActions, make it an array and append to it.
+   * Account for wrapActions/wrapSelectors make it an array and append to it.
    * Modifies `src`.
    * 80% of this code is just safe traversal. We need to address that ( ie: use a lib ).
    */
@@ -45,25 +45,47 @@ export const systemExtend = (dest = {}, src = {}) => {
   if (isPlainObject(statePlugins)) {
     keys(statePlugins).forEach((namespace) => {
       const namespaceObj = statePlugins[namespace];
-      if (!isPlainObject(namespaceObj) || !isPlainObject(namespaceObj.wrapActions)) {
+      if (!isPlainObject(namespaceObj)) {
         return;
       }
-      const { wrapActions } = namespaceObj;
-      keys(wrapActions).forEach((actionName) => {
-        let action = wrapActions[actionName];
+      const { wrapActions, wrapSelectors } = namespaceObj;
+      // process action wrapping
+      if (isPlainObject(wrapActions)) {
+        keys(wrapActions).forEach((actionName) => {
+          let action = wrapActions[actionName];
 
-        // this should only happen if dest is the first plugin, since invocations after that will ensure its an array
-        if (isNotArray(action)) {
-          action = [action];
-          wrapActions[actionName] = action; // put the value inside an array
-        }
+          // this should only happen if dest is the first plugin, since invocations after that will ensure its an array
+          if (isNotArray(action)) {
+            action = [action];
+            wrapActions[actionName] = action; // put the value inside an array
+          }
 
-        if (hasPath(['statePlugins', namespace, 'wrapActions', actionName], src)) {
-          src.statePlugins[namespace].wrapActions[actionName] = wrapActions[actionName].concat(
-            src.statePlugins[namespace].wrapActions[actionName]
-          );
-        }
-      });
+          if (hasPath(['statePlugins', namespace, 'wrapActions', actionName], src)) {
+            src.statePlugins[namespace].wrapActions[actionName] = wrapActions[actionName].concat(
+              src.statePlugins[namespace].wrapActions[actionName]
+            );
+          }
+        });
+      }
+
+      // process selector wrapping
+      if (isPlainObject(wrapSelectors)) {
+        keys(wrapSelectors).forEach((selectorName) => {
+          let selector = wrapSelectors[selectorName];
+
+          // this should only happen if dest is the first plugin, since invocations after that will ensure its an array
+          if (isNotArray(selector)) {
+            selector = [selector];
+            wrapSelectors[selectorName] = selector; // put the value inside an array
+          }
+
+          if (hasPath(['statePlugins', namespace, 'wrapSelectors', selectorName], src)) {
+            src.statePlugins[namespace].wrapSelectors[selectorName] = wrapSelectors[
+              selectorName
+            ].concat(src.statePlugins[namespace].wrapSelectors[selectorName]);
+          }
+        });
+      }
     });
   }
   /* eslint-enable no-param-reassign */
