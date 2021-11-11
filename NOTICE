@@ -1,0 +1,11 @@
+swagger-adjust
+Copyright 2021 Vladimír Gorej <vladimir.gorej@gmail.com>
+
+swagger-ui
+Copyright 2020-2021 SmartBear Software Inc.
+
+File src/system/index.js (the file) was originally created in https://github.com/swagger-api/swagger-ui repository
+under file path src/core/system.js. The file has been copied into this project and all it's parts have been heavily modified.
+All modifications are licensed under Apache 2.0 License.
+
+
