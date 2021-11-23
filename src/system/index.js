@@ -8,7 +8,7 @@ import {
   createReducer,
   combineReducers,
 } from '@reduxjs/toolkit';
-import serializeError from 'serialize-error';
+import { serializeError } from 'serialize-error';
 import {
   identity,
   pathOr,
