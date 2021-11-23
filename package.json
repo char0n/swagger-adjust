@@ -11,7 +11,7 @@
     "react-redux-applications"
   ],
   "license": "Apache-2.0",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "main": "cjs/index.js",
   "module": "es/index.js",
   "jsnext:main": "es/index.js",
