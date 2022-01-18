@@ -33,8 +33,8 @@
   },
   "dependencies": {
     "@reduxjs/toolkit": "^1.5.0",
-    "ramda": "^0.27.1",
-    "ramda-adjunct": "^2.30.0",
+    "ramda": "^0.28.0",
+    "ramda-adjunct": "^3.0.0",
     "react-redux": "^7.2.2",
     "serialize-error": "^9.0.0"
   },
