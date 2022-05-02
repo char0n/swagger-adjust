@@ -1,7 +1,7 @@
 import React from 'react';
-import List from '@material-ui/core/List';
-import Divider from '@material-ui/core/Divider';
-import { makeStyles } from '@material-ui/core/styles';
+import List from '@mui/material/List';
+import Divider from '@mui/material/Divider';
+import { makeStyles } from '@mui/styles';
 import { useSystemComponent, useSystemSelector } from 'swagger-adjust';
 
 const useStyles = makeStyles(() => ({

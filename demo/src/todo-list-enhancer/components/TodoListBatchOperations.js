@@ -1,6 +1,6 @@
-import ButtonGroup from '@material-ui/core/ButtonGroup';
-import Button from '@material-ui/core/Button';
-import { makeStyles } from '@material-ui/core/styles';
+import ButtonGroup from '@mui/material/ButtonGroup';
+import Button from '@mui/material/Button';
+import { makeStyles } from '@mui/styles';
 import { useSystemActionCreatorBound } from 'swagger-adjust';
 
 const useStyles = makeStyles((theme) => ({
