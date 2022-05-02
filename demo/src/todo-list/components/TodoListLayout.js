@@ -1,12 +1,9 @@
-import CssBaseline from '@material-ui/core/CssBaseline';
-import Paper from '@material-ui/core/Paper';
-import {
-  ThemeProvider,
-  unstable_createMuiStrictModeTheme, // eslint-disable-line
-} from '@material-ui/core/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+import Paper from '@mui/material/Paper';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { useSystemComponent } from 'swagger-adjust';
 
-const themeInstance = unstable_createMuiStrictModeTheme();
+const themeInstance = createTheme();
 
 const TodoListLayout = () => {
   const TodoListAppBar = useSystemComponent('TodoListAppBar');
