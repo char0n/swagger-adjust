@@ -58,7 +58,7 @@
     "@babel/plugin-proposal-object-rest-spread": "=7.18.0",
     "@babel/preset-env": "^7.13.0",
     "@babel/register": "=7.17.7",
-    "@commitlint/cli": "^16.0.2",
+    "@commitlint/cli": "^17.0.2",
     "@commitlint/config-conventional": "^16.0.0",
     "babel-loader": "=8.2.5",
     "cross-env": "=7.0.3",
