@@ -46,7 +46,7 @@ jobs:
         working-directory: ./demo
       - name: Upload build artifacts
         if: github.ref == 'refs/heads/main'
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: build
           path: ./demo/build
