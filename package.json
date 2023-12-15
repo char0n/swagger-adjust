@@ -29,7 +29,7 @@
     "clean": "rimraf cjs es dist"
   },
   "dependencies": {
-    "@reduxjs/toolkit": "^1.5.0",
+    "@reduxjs/toolkit": "^2.0.1",
     "ramda": "^0.29.0",
     "ramda-adjunct": "^4.0.0",
     "serialize-error": "^11.0.0"
