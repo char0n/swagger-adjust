@@ -189,8 +189,13 @@ export default class System {
 
   rebuildRootReducer() {
     const reducedSlices = mapObjIndexed(
-      ({ initialState = this.initialPluginState, reducers = {} }) =>
-        createReducer(initialState, reducers),
+      ({ initialState = this.initialPluginState, reducers = {} }) => {
+        return createReducer(initialState, (builder) => {
+          Object.entries(reducers).forEach(([action, reducer]) => {
+            builder.addCase(action, reducer);
+          });
+        });
+      },
       this.system.statePlugins
     );
     const rootReducer = isEmpty(reducedSlices)
