@@ -104,7 +104,9 @@ export const combinePlugins = (plugins, system) => {
 
   if (isArray(plugins)) {
     // eslint-disable-next-line no-unused-vars
-    return plugins.map((plugin) => combinePlugins(plugin, system)).reduce(systemExtend, {});
+    return plugins
+      .map((plugin) => combinePlugins(plugin, system))
+      .reduce(systemExtend, { components: { ...system.getComponents() } });
   }
 
   return {};
