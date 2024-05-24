@@ -57,7 +57,7 @@
     "@babel/plugin-proposal-class-properties": "^7.13.0",
     "@babel/plugin-proposal-object-rest-spread": "=7.20.7",
     "@babel/preset-env": "^7.13.0",
-    "@babel/register": "=7.23.7",
+    "@babel/register": "=7.24.6",
     "@commitlint/cli": "^19.3.0",
     "@commitlint/config-conventional": "^19.2.2",
     "babel-loader": "=9.1.3",
