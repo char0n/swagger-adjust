@@ -51,7 +51,7 @@
     }
   },
   "devDependencies": {
-    "@babel/cli": "=7.25.9",
+    "@babel/cli": "=7.26.4",
     "@babel/core": "^7.13.1",
     "@babel/eslint-parser": "^7.13.0",
     "@babel/plugin-proposal-class-properties": "^7.13.0",
