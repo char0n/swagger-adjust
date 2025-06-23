@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.0.1",
-    "ramda": "^0.30.0",
+    "ramda": "^0.31.3",
     "ramda-adjunct": "^5.0.0",
     "serialize-error": "^12.0.0"
   },
