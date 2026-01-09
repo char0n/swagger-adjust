@@ -61,7 +61,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - name: Download math result for job 1
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4.8.0
         with:
